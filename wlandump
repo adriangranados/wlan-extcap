@@ -121,9 +121,9 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
         remote_interface = "wlan0"
 
     if (interface == "wifidump") and remote_interface:
-        capture_cmd="sudo /sbin/ifconfig " + remote_interface + " down > /dev/null" + \
-                    " ; sudo /sbin/iwconfig " + remote_interface + " mode Monitor > /dev/null" + \
-                    " ; sudo /sbin/ifconfig " + remote_interface + " up > /dev/null" + \
+        capture_cmd="sudo /sbin/ip link set " + remote_interface + " down > /dev/null" + \
+                    " ; sudo /usr/sbin/iw dev " + remote_interface + " set type monitor > /dev/null" + \
+                    " ; sudo /sbin/ip link set " + remote_interface + " up > /dev/null" + \
                     " ; sudo /usr/sbin/iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
                     " && /usr/sbin/tcpdump -i " + remote_interface + " -U -w -"
 
