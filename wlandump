@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(
         prog="wifidump",
-        description="Wi-Fi remote capture"
+        description="WLAN remote capture"
     )
 
     #Extcap Arguments
