@@ -29,8 +29,14 @@ where `<username>` is, again, the SSH user for connecting remotely.
 
 ### If you're running Wireshark on Windows:
 
-1. Copy `wlandump` to `C:\Program Files\Wireshark\extcap\`
-2. Create a file called `wlandump.bat` in the same `C:\Program Files\Wireshark\extcap\` directory with the following content: 
+1. The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
+
+<p align="center">
+<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
+</p>
+
+2. Copy `wlandump` to `C:\Program Files\Wireshark\extcap\`
+3. Create a file called `wlandump.bat` in the same `C:\Program Files\Wireshark\extcap\` directory with the following content: 
 
 ```bat
 @echo off
@@ -43,12 +49,6 @@ Where `<PATH_TO_PYTHON_INTERPRETER>` is the path to the Python executable and `<
 @echo off
 "C:\Program Files (x86)\Python37-32\python.exe" "C:\Program Files\Wireshark\extcap\wlandump" %*
 ```
-
-The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
-
-<p align="center">
-<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
-</p>
 
 ### If you're running Wireshark on macOS:
 1. Copy `wlandump` to `/Applications/Wireshark.app/Contents/MacOS/extcap/`
