@@ -61,7 +61,7 @@ chmod +x /Applications/Wireshark.app/Contents/MacOS/extcap/wlandump
 
 Now launch Wireshark and verify that __Wi-Fi remote capture__ is listed as an extcap interface:
 
-![Wi-Fi Extcap Interface](../master/images/wlandump-extcap-interface.png "Wi-Fi Extcap Interface")
+![Wi-Fi Extcap Interface](../master/images/wlandump-interface.png "Wi-Fi Extcap Interface")
 
 > __Note__: You will have to repeat the setup of the `wlandump` extcap interface on your computer each time you update Wireshark. The Wireshark installer doesn't preserve 3rd-party extcap interfaces added to the _extcap_ folder.
 
