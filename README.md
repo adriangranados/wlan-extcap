@@ -1,7 +1,7 @@
 # wlan-extcap
 Wireshark extcap interface for remote Wi-Fi captures. It allows you to perform live remote captures on a specific channel and channel width using a Linux device's Wi-Fi adapter.
 
-This extcap interface is basically a wrapper for sshdump that includes additional options, such as an option to choose the Wi-Fi channel to capture on. It also simplifies the configuration of the extcap interface so that the user doesn't have to deal with remote capture commands, etc.
+This extcap interface is basically a wrapper for the `sshdump` extcap interface that includes additional options, such as an option to choose the Wi-Fi channel to capture on. It also simplifies the configuration of the extcap interface so that the user doesn't have to deal with remote capture commands, etc.
 
 ## Requirements
 
