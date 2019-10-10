@@ -67,7 +67,7 @@ Now launch Wireshark and verify that __Wi-Fi remote capture__ is listed as an ex
 
 ## Usage
 
-1. Click the _gear_ icon next to "Wi-Fi remote capture" to display the interface options, then choose the channel (and channel width) you want to capture on:
+1. Click the _gear_ icon next to "Wi-Fi remote capture" to display the interface options, then choose the interface name, channel, and channel width you want to capture on:
 
 ![Wi-Fi Extcap Interface Options](../master/images/wlandump-interface-options.png "Wi-Fi Extcap Interface Options")
 
