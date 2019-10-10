@@ -5,7 +5,7 @@ This extcap interface is basically a wrapper for sshdump that includes additiona
 
 ## Requirements
 
-The `wlandump` extcap interface uses `tcpdump` as the remote tool for captures. Make sure `tcpdump` can be run by the SSH user and without root privileges. For example:
+The `wlandump` extcap interface uses `tcpdump` as the remote tool for Wi-Fi captures. Make sure `tcpdump` can be run remotey by the SSH user and without root privileges. For example:
 ```sh
 sudo groupadd pcap
 sudo usermod -a -G pcap <username>
@@ -25,21 +25,7 @@ where `<username>` is, again, the SSH user for connecting remotely.
 
 > __Note__: This is required so that the extcap interface can put the Wi-Fi adapter into monitor mode and change the channel before starting the capture.
 
-The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
-
-<p align="center">
-<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
-</p>
-
 ## Setup
-
-### If you're running Wireshark on macOS:
-1. Copy `wlandump` to `/Applications/Wireshark.app/Contents/MacOS/extcap/`
-2. Make sure it has execution permissions:
-
-```sh
-chmod +x /Applications/Wireshark.app/Contents/MacOS/extcap/wlandump
-```
 
 ### If you're running Wireshark on Windows:
 
@@ -56,6 +42,20 @@ Where `<PATH_TO_PYTHON_INTERPRETER>` is the path to the Python executable and `<
 ```bat
 @echo off
 "C:\Program Files (x86)\Python37-32\python.exe" "C:\Program Files\Wireshark\extcap\wlandump" %*
+```
+
+The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
+
+<p align="center">
+<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
+</p>
+
+### If you're running Wireshark on macOS:
+1. Copy `wlandump` to `/Applications/Wireshark.app/Contents/MacOS/extcap/`
+2. Make sure it has execution permissions:
+
+```sh
+chmod +x /Applications/Wireshark.app/Contents/MacOS/extcap/wlandump
 ```
 
 Now launch Wireshark and verify that __Wi-Fi remote capture__ is listed as an extcap interface:
