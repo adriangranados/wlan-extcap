@@ -18,7 +18,7 @@ where `<username>` is the SSH user for connecting remotely.
 
 Also, create the file `/etc/sudoers.d/wlandump` with the following content:
 ```sh
-<username> ALL = (root) NOPASSWD: /sbin/ifconfig, /sbin/iwconfig, /usr/sbin/iw
+<username> ALL = (root) NOPASSWD: /sbin/ip, /usr/sbin/iw
 ```
 
 where `<username>` is, again, the SSH user for connecting remotely.
