@@ -29,7 +29,8 @@ where `<username>` is, again, the SSH user for connecting remotely.
 
 ### If you're running Wireshark on Windows:
 
-1. The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
+1. Install [Python](https://www.python.org/downloads/).
+2. The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
 
 <p align="center">
 <img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
