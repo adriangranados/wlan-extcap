@@ -3,15 +3,35 @@ Wireshark extcap interface for remote Wi-Fi captures. It allows you to perform l
 
 This extcap interface is basically a wrapper for sshdump that includes an option to choose the channel we want to capture on. It also simplifies the configuration of the extcap interface so that the user doesn't have to deal with remote capture commands, etc.
 
-## Setup
-Create the file `/etc/sudoers.d/wifidump` with the following content:
+## Requirements
+
+The `wifidump` extcap interface uses `tcpdump` as the remote tool for captures. Make sure `tcpdump` can be run by the SSH user and without root privileges. For example:
+```sh
+sudo groupadd pcap
+sudo usermod -a -G pcap <username>
+sudo chgrp pcap /usr/sbin/tcpdump
+sudo chmod 750 /usr/sbin/tcpdump
+sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+```
+
+where `<username>` is the SSH user for connecting remotely.
+
+Also, create the file `/etc/sudoers.d/wifidump` with the following content:
 ```sh
 <username> ALL = (root) NOPASSWD: /sbin/ifconfig, /sbin/iwconfig, /usr/sbin/iw
 ```
 
-Where `<username>` is the SSH username used for connecting remotely.
+where `<username>` is, again, the SSH user for connecting remotely.
 
 > __Note__: This is required so that the extcap interface can put the Wi-Fi adapter into monitor mode and change the channel before starting the capture.
+
+The `wlanpidump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
+
+<p align="center">
+<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
+</p>
+
+## Setup
 
 ### If you're running Wireshark on macOS:
 1. Copy `wifidump` to `/Applications/Wireshark.app/Contents/MacOS/extcap/`
