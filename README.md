@@ -65,6 +65,16 @@ Now launch Wireshark and verify that __Wi-Fi remote capture__ is listed as an ex
 
 > __Note__: You will have to repeat the setup of the `wlandump` extcap interface on your computer each time you update Wireshark. The Wireshark installer doesn't preserve 3rd-party extcap interfaces added to the _extcap_ folder.
 
+### If you're running Wireshark on Linux
+The steps are the same as the ones above for macOS, the only difference is the path to copy `wlandump` to. To find the correct path:
+1. On Wireshark, go to _`Help -> About Wireshark`_;
+2. Change to tab __Folders__;
+3. Use the path indicated by __Extcap path__.
+
+<p align="center">
+<img src="../master/images/wireshark-extcap-path.png" alt="Extcap path" height="300px">
+</p>
+
 ## Usage
 
 1. Click the _gear_ icon next to "Wi-Fi remote capture" to display the interface options, then choose the interface name, channel, and channel width you want to capture on:
