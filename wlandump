@@ -141,7 +141,7 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
 
     # Prepare remote command for Zigbee capture
     elif (interface == "zbdump"):
-        capture_cmd = "sudo /usr/local/bin/whsniff -c " + remote_channel
+        capture_cmd = "sudo /usr/bin/killall whsniff ; sudo /usr/local/bin/whsniff -c " + remote_channel
 
     if capture_cmd:
         sshdump_args = [sshdump_path,
@@ -153,7 +153,6 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
                         "--remote-username", remote_username,
                         "--remote-password", remote_password,
                         "--sshkey", sshkey,
-                        "--remote-sudo",
                         "--fifo", fifo,
                         "--capture"]
 
