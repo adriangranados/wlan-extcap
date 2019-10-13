@@ -9,7 +9,7 @@
 # we want to capture on, and to simplify the configuration of the
 # extcap interface so that the user does not have to deal with
 # remote capture commands, etc.
-# 
+#
 # Based on Wireshark's extcap_example.py.
 
 from __future__ import print_function
@@ -65,15 +65,6 @@ def extcap_config(interface, option):
         print("arg {number=1}{call=--remote-channel}{display=Remote Wi-Fi channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
         print("arg {number=2}{call=--remote-channel-width}{display=Remote Wi-Fi channel width}{type=selector}{tooltip=The width of the channel to capture on}{group=Capture}")
 
-        # Server Tab
-        print("arg {number=10}{call=--remote-host}{display=Remote SSH server address}{type=string}{tooltip=The remote SSH host. It can be both an IP address or a hostname}{required=true}{group=Server}")
-        print("arg {number=11}{call=--remote-port}{display=Remote SSH server port}{type=unsigned}{tooltip=The remote SSH host port (1-65535)}{range=1,65535}{default=22}{group=Server}")
-
-        # Authentication Tab
-        print("arg {number=20}{call=--remote-username}{display=Remote SSH server username}{type=string}{tooltip=The remote SSH username. If not provided, the current user will be used}{group=Authentication}")
-        print("arg {number=21}{call=--remote-password}{display=Remote SSH server password}{type=password}{tooltip=The SSH password, used when other methods (SSH agent or key files) are unavailable.}{group=Authentication}")
-        print("arg {number=22}{call=--sshkey}{display=Path to SSH private key}{type=fileselect}{tooltip=The path on the local filesystem of the private ssh key}{group=Authentication}")
-
         # Channel values
         for ch in channels_wifi:
             print("value {arg=1}{value=" + str(ch) + "}{display=Channel " + str(ch) + "}")
@@ -84,16 +75,34 @@ def extcap_config(interface, option):
         print("value {arg=2}{value=HT40+}{display=40+ MHz}")
         print("value {arg=2}{value=80MHz}{display=80 MHz}")
 
+    elif (interface == "zbdump"):
+        print("arg {number=0}{call=--remote-channel}{display=Remote Zigbee channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
+
+        for ch in range(11, 27):
+            print("value {arg=0}{value=" + str(ch) + "}{display=Channel " + str(ch) + "}")
+
+    # Server Tab
+    print("arg {number=10}{call=--remote-host}{display=Remote SSH server address}{type=string}{tooltip=The remote SSH host. It can be both an IP address or a hostname}{required=true}{group=Server}")
+    print("arg {number=11}{call=--remote-port}{display=Remote SSH server port}{type=unsigned}{tooltip=The remote SSH host port (1-65535)}{range=1,65535}{default=22}{group=Server}")
+
+    # Authentication Tab
+    print("arg {number=20}{call=--remote-username}{display=Remote SSH server username}{type=string}{tooltip=The remote SSH username. If not provided, the current user will be used}{group=Authentication}")
+    print("arg {number=21}{call=--remote-password}{display=Remote SSH server password}{type=password}{tooltip=The SSH password, used when other methods (SSH agent or key files) are unavailable.}{group=Authentication}")
+    print("arg {number=22}{call=--sshkey}{display=Path to SSH private key}{type=fileselect}{tooltip=The path on the local filesystem of the private ssh key}{group=Authentication}")
+
 def extcap_version():
     print("extcap {version=1.0}")
 
 def extcap_interfaces():
     print("extcap {version=1.0}")
     print("interface {value=wifidump}{display=Wi-Fi remote capture}")
+    print("interface {value=zbdump}{display=Zigbee remote capture}")
 
 def extcap_dlts(interface):
     if (interface == "wifidump"):
         print("dlt {number=147}{name=wifidump}{display=Remote capture dependent DLT}")
+    elif (interface == "zbdump"):
+        print("dlt {number=195}{name=zbdump}{display=IEEE 802.15.4 with FCS DLT}")
 
 def extcap_capture(interface, remote_host, remote_port, remote_username, remote_password, sshkey, remote_interface, remote_channel, remote_channel_width, fifo, capture_filter):
     extcap_path = sys.argv[0]
@@ -101,7 +110,7 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
     sshdump_path = os.path.join(extcap_dir, "sshdump")
 
     capture_cmd = ""
-    
+
     if not remote_username:
         remote_username = ""
 
@@ -114,18 +123,25 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
     if not capture_filter:
         capture_filter = ""
 
-    if not remote_channel_width:
-        remote_channel_width = "HT20"
+    # Prepare remote command for Wi-Fi capture
+    if (interface == "wifidump"):
 
-    if not remote_interface:
-        remote_interface = "wlan0"
+        if not remote_channel_width:
+            remote_channel_width = "HT20"
 
-    if (interface == "wifidump") and remote_interface:
-        capture_cmd="sudo /sbin/ip link set " + remote_interface + " down > /dev/null" + \
-                    " ; sudo /usr/sbin/iw dev " + remote_interface + " set type monitor > /dev/null" + \
-                    " ; sudo /sbin/ip link set " + remote_interface + " up > /dev/null" + \
-                    " ; sudo /usr/sbin/iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
-                    " && /usr/sbin/tcpdump -i " + remote_interface + " -U -w -"
+        if not remote_interface:
+            remote_interface = "wlan0"
+
+        if remote_interface:
+            capture_cmd="sudo /sbin/ip link set " + remote_interface + " down > /dev/null" + \
+                        " ; sudo /usr/sbin/iw dev " + remote_interface + " set type monitor > /dev/null" + \
+                        " ; sudo /sbin/ip link set " + remote_interface + " up > /dev/null" + \
+                        " ; sudo /usr/sbin/iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
+                        " && /usr/sbin/tcpdump -i " + remote_interface + " -U -w -"
+
+    # Prepare remote command for Zigbee capture
+    elif (interface == "zbdump"):
+        capture_cmd = "sudo /usr/local/bin/whsniff -c " + remote_channel
 
     if capture_cmd:
         sshdump_args = [sshdump_path,
@@ -198,7 +214,7 @@ if __name__ == '__main__':
     elif args.extcap_dlts:
         extcap_dlts(args.extcap_interface)
     elif args.capture:
-        if (args.extcap_interface == "wifidump"):
+        if (args.extcap_interface == "wifidump" or args.extcap_interface == "zbdump"):
             extcap_capture(args.extcap_interface, args.remote_host, args.remote_port, args.remote_username, args.remote_password, args.sshkey,
                            args.remote_interface, args.remote_channel, args.remote_channel_width, args.fifo, args.extcap_capture_filter)
         else:
