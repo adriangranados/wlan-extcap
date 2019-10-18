@@ -103,9 +103,7 @@ where `USERNAME` is, again, the SSH user for connecting remotely.
 
 4. Click the __Start__ button to start the capture.
 
-<p align="center">
-<img src="/images/wifi-capture.png" alt="Wi-Fi Capture" height="200px">
-</p>
+![Wi-Fi Capture](/images/wifi-capture.png "Wi-Fi Capture")
 
 ## Remote Zigbee Captures
 
@@ -153,6 +151,4 @@ where `USERNAME` is the SSH user for connecting remotely.
 
 4. Click the __Start__ button to start the capture.
 
-<p align="center">
-<img src="/images/zigbee-capture.png" alt="Zigbee Capture" height="200px">
-</p>
+![Zigbee Capture](/images/zigbee-capture.png "Zigbee Capture")
