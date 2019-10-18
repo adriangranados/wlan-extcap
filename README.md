@@ -105,7 +105,7 @@ where `USERNAME` is, again, the SSH user for connecting remotely.
 
 ## Remote Zigbee Captures
 
-The `zbdump` capture interface uses `whsniff` as the remote tool for Zigbee captures using the TI CC2531 USB dongle. To install `whsniff` in the Linux target:
+The `zbdump` capture interface uses `whsniff` as the remote tool for Zigbee captures using the TI CC2531 USB dongle. To install `whsniff` in the remote Linux device:
 
 1. Install `libusb-1.0-0-dev`:
 ```sh
