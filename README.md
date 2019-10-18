@@ -53,7 +53,7 @@ Launch Wireshark and verify that the capture interfaces provided by the `wlandum
 
 ![WLAN Extcap Interface](../master/images/wlandump-interfaces.png "WLAN Extcap Interface")
 
-> __Note__: You will have to repeat the setup of the `wlandump` extcap interface on your computer each time you update Wireshark. The Wireshark installer doesn't preserve 3rd-party extcap interfaces added to the _extcap_ folder.
+> __Note__: You will have to reinstall the `wlandump` extcap interface on your computer each time you update Wireshark. The Wireshark installer doesn't preserve 3rd-party extcap interfaces added to the _extcap_ folder.
 
 ## Remote Wi-Fi Captures
 
