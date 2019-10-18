@@ -85,7 +85,7 @@ where `USERNAME` is, again, the SSH user for connecting remotely.
 1. Click the _gear_ icon next to "Wi-Fi remote capture" to display the interface options, then choose the interface name, channel, and channel width you want to capture on:
 
 <p align="center">
-<img src="/images/wifidiump-interface-options.png" alt="Wi-Fi Interface Options" height="200px">
+<img src="/images/wifidump-interface-options.png" alt="Wi-Fi Interface Options" height="200px">
 </p>
 
 > __Note:__ All 802.11 channels are listed, however, the Wi-Fi adapter on the remote device may support only a subset of them. If you choose a channel that is not supported by the Wi-Fi adapter or a channel width that doesn't apply to the selected channel, the capture will fail.
