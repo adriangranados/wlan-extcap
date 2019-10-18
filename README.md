@@ -75,7 +75,7 @@ where `USERNAME` is the SSH user for connecting remotely.
 The interface also requires of the `ip` and `iw` command line utilities to put the Wi-Fi adapter in monitor mode and set the desired channel and channel width. Make sure these two utilities are installed and then create the file `/etc/sudoers.d/wifidump` with the following content:
 
 ```sh
-USERNAME ALL = (root) NOPASSWD: ip, iw
+USERNAME ALL = (root) NOPASSWD: /sbin/ip, /usr/sbin/iw
 ```
 
 where `USERNAME` is, again, the SSH user for connecting remotely.
@@ -103,6 +103,10 @@ where `USERNAME` is, again, the SSH user for connecting remotely.
 
 4. Click the __Start__ button to start the capture.
 
+<p align="center">
+<img src="/images/wifi-capture.png" alt="Wi-Fi Capture" height="200px">
+</p>
+
 ## Remote Zigbee Captures
 
 The `zbdump` capture interface uses `whsniff` as the remote tool for Zigbee captures using the TI CC2531 USB dongle. To install `whsniff` in the remote Linux device:
@@ -122,7 +126,7 @@ $ sudo make install
 Then create the file `/etc/sudoers.d/zbdump` with the following content:
 
 ```sh
-USERNAME ALL = (root) NOPASSWD: whsniff
+USERNAME ALL = (root) NOPASSWD: /usr/local/bin/whsniff, /usr/bin/killall /usr/local/bin/whsniff
 ```
 
 where `USERNAME` is the SSH user for connecting remotely.
@@ -148,3 +152,7 @@ where `USERNAME` is the SSH user for connecting remotely.
 > __Note:__ The password is not saved, so to avoid having to enter the password each time you start a capture, I would recommend you setup passwordless SSH authentication.
 
 4. Click the __Start__ button to start the capture.
+
+<p align="center">
+<img src="/images/zigbee-capture.png" alt="Zigbee Capture" height="200px">
+</p>
