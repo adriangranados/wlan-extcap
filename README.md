@@ -3,7 +3,7 @@ Wireshark extcap interface for remote wireless captures using a Linux device.
 
 This extcap interface is basically a wrapper for the `sshdump` extcap interface that includes additional options to customize the capture. For example, if capturing Wi-Fi traffic, you can choose the Wi-Fi channel to capture on. It also simplifies the configuration of the extcap interface so that the user doesn't have to deal with complex remote capture commands, etc.
 
-The `wlandump` extcap interface currently provides two capture interfaces: __Wi-Fi__ and __Zigbee__, each with its own set of options. The `wifidump` interface allows you to perform remote Wi-Fi captures on a specific channel and channel width using a Linux device's Wi-Fi adapter. The `zbdump` interface allows you to perform remote Zigbee captures using a [TI CC2531 USB](http://www.ti.com/tool/CC2531EMK) dongle.
+The `wlandump` extcap interface currently provides two capture interfaces: __Wi-Fi__ and __Zigbee__, each with its own set of options. The `wifidump` interface allows you to perform remote Wi-Fi captures on a specific channel and channel width using a  Wi-Fi adapter that can be put in monitor mode. The `zbdump` interface allows you to perform remote Zigbee captures using a [TI CC2531 USB](http://www.ti.com/tool/CC2531EMK) dongle.
 
 ## Installation
 
