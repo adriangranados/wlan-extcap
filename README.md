@@ -13,7 +13,7 @@ The `wlandump` extcap interface currently provides two capture interfaces: __Wi-
 2. The `wlandump` extcap interface requires the `sshdump` extcap interface, which is not installed by default on Windows. When installing Wireshark on Windows, select __SSHdump__ as one of the components to install:
 
 <p align="center">
-<img src="../master/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
+<img src="/images/wireshark-installer-sshdump.png" alt="Wireshark Installer SSHdumpr" height="400px">
 </p>
 
 2. Copy `wlandump` to `C:\Program Files\Wireshark\extcap\`
@@ -46,12 +46,12 @@ The steps are the same as the ones above for macOS, the only difference is the p
 3. Use the path indicated by __Extcap path__.
 
 <p align="center">
-<img src="../master/images/wireshark-extcap-path.png" alt="Extcap path" height="300px">
+<img src="/images/wireshark-extcap-path.png" alt="Extcap path" height="300px">
 </p>
 
 Launch Wireshark and verify that the capture interfaces provided by the `wlandump` extcap interface are listed:
 
-![WLAN Extcap Interface](../master/images/wlandump-interfaces.png "WLAN Extcap Interface")
+![WLAN Extcap Interface](/images/wlandump-interfaces.png "WLAN Extcap Interface")
 
 > __Note__: You will have to reinstall the `wlandump` extcap interface on your computer each time you update Wireshark. The Wireshark installer doesn't preserve 3rd-party extcap interfaces added to the _extcap_ folder.
 
@@ -84,19 +84,19 @@ where `USERNAME` is, again, the SSH user for connecting remotely.
 
 1. Click the _gear_ icon next to "Wi-Fi remote capture" to display the interface options, then choose the interface name, channel, and channel width you want to capture on:
 
-![Wi-Fi Extcap Interface Options](../master/images/wifidump-interface-options.png "Wi-Fi Extcap Interface Options")
+![Wi-Fi Extcap Interface Options](/images/wifidump-interface-options.png "Wi-Fi Extcap Interface Options")
 
 > __Note:__ All 802.11 channels are listed, however, the Wi-Fi adapter on the remote device may support only a subset of them. If you choose a channel that is not supported by the Wi-Fi adapter or a channel width that doesn't apply to the selected channel, the capture will fail.
 2. Go to the _Server_ tab and enter the remote SSH server address, e.g. 192.168.42.1.
 
 <p align="center">
-<img src="../master/images/wifidump-interface-options-server.png" alt="Wi-Fi Extcap Interface Options - Server" height="200px">
+<img src="/images/wifidump-interface-options-server.png" alt="Wi-Fi Extcap Interface Options - Server" height="200px">
 </p>
 
 3. Go to the _Authentication_ tab and enter the username and password.
 
 <p align="center">
-<img src="../master/images/wifidump-interface-options-auth.png" alt="Wi-Fi Extcap Interface Options - Auth" height="200px">
+<img src="/images/wifidump-interface-options-auth.png" alt="Wi-Fi Extcap Interface Options - Auth" height="200px">
 </p>
 
 > __Note:__ The password is not saved, so to avoid having to enter the password each time you start a capture, I would recommend you setup passwordless SSH authentication.
@@ -131,18 +131,18 @@ where `USERNAME` is the SSH user for connecting remotely.
 
 1. Click the _gear_ icon next to "Zigbee remote capture" to display the interface options, then choose the Zigbee channel you want to capture on:
 
-![Zigbee Extcap Interface Options](../master/images/zbdump-interface-options.png "Zigbee Interface Options")
+![Zigbee Extcap Interface Options](/images/zbdump-interface-options.png "Zigbee Interface Options")
 
 2. Go to the _Server_ tab and enter the remote SSH server address, e.g. 192.168.42.1.
 
 <p align="center">
-<img src="../master/images/zbdump-interface-options-server.png" alt="Zigbee Interface Options - Server" height="200px">
+<img src="/images/zbdump-interface-options-server.png" alt="Zigbee Interface Options - Server" height="200px">
 </p>
 
 3. Go to the _Authentication_ tab and enter the username and password.
 
 <p align="center">
-<img src="../master/images/zbdump-interface-options-auth.png" alt="Zigbee Interface Options - Auth" height="200px">
+<img src="/images/zbdump-interface-options-auth.png" alt="Zigbee Interface Options - Auth" height="200px">
 </p>
 
 > __Note:__ The password is not saved, so to avoid having to enter the password each time you start a capture, I would recommend you setup passwordless SSH authentication.
