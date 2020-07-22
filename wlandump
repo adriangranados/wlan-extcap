@@ -133,11 +133,11 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
             remote_interface = "wlan0"
 
         if remote_interface:
-            capture_cmd="sudo /sbin/ip link set " + remote_interface + " down > /dev/null" + \
-                        " ; sudo /usr/sbin/iw dev " + remote_interface + " set type monitor > /dev/null" + \
-                        " ; sudo /sbin/ip link set " + remote_interface + " up > /dev/null" + \
-                        " ; sudo /usr/sbin/iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
-                        " && /usr/sbin/tcpdump -i " + remote_interface + " -U -w -"
+            capture_cmd="sudo ip link set " + remote_interface + " down > /dev/null" + \
+                        " ; sudo iw dev " + remote_interface + " set type monitor > /dev/null" + \
+                        " ; sudo ip link set " + remote_interface + " up > /dev/null" + \
+                        " ; sudo iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
+                        " && sudo tcpdump -i " + remote_interface + " -U -w -"
 
     # Prepare remote command for Zigbee capture
     elif (interface == "zbdump"):
