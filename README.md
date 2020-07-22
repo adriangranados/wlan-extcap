@@ -78,7 +78,7 @@ The interface also requires of the `ip` and `iw` command line utilities to put t
 USERNAME ALL = (root) NOPASSWD: /sbin/ip, /usr/sbin/iw
 ```
 
-where `USERNAME` is, again, the SSH user for connecting remotely.
+where `USERNAME` is, again, the SSH user for connecting remotely. Also, in some systems the location of the `ip` and `iw` might be different, so you need to adjust the paths accordingly.
 
 ### Usage
 
