@@ -17,7 +17,7 @@ The `wlandump` extcap interface currently provides two capture interfaces: __Wi-
 </p>
 
 2. Copy `wlandump` to `C:\Program Files\Wireshark\extcap\`
-3. Create a file called `wlandump.bat` in the same `C:\Program Files\Wireshark\extcap\` directory with the following content: 
+3. Create a file called `wlandump.bat` in the same `C:\Program Files\Wireshark\extcap\` directory with the following content:
 
 ```bat
 @echo off
@@ -72,7 +72,7 @@ $ sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
 
 where `USERNAME` is the SSH user for connecting remotely.
 
-The interface also requires of the `ip` and `iw` command line utilities to put the Wi-Fi adapter in monitor mode and set the desired channel and channel width. Make sure these two utilities are installed and then create the file `/etc/sudoers.d/wifidump` with the following content:
+The interface also requires of the `ip`, `iw` command line utilities to put the Wi-Fi adapter in monitor mode and set the desired channel and channel width. Make sure these two utilities are installed and then create the file `/etc/sudoers.d/wifidump` with the following content:
 
 ```sh
 USERNAME ALL = (root) NOPASSWD: /sbin/ip, /usr/sbin/iw
