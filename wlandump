@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2019 Adrian Granados <adrian@adriangranados.com>
+# Copyright 2022 Adrian Granados <adrian@adriangranados.com>
 #
 # Wireshark extcap interface for remote Wi-Fi captures.
 #
@@ -24,8 +24,81 @@ ERROR_ARG            = 1
 ERROR_INTERFACE      = 2
 ERROR_FIFO           = 3
 
-channels_wifi = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-            36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165]
+freqs_wifi = [2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484,
+                5180, 5200, 5220, 5240, 5260, 5280, 5300, 5320, 5500, 5520, 5540, 5560, 5580,
+                5600, 5620, 5640, 5660, 5680, 5700, 5720, 5745, 5765, 5785, 5805, 5825,
+                5975, 6055, 6135, 6215, 6295, 6375, 6455, 6535, 6615, 6695, 6775, 6855, 6935, 7015, 7095]
+
+wifidump_script = """
+function iface_down {
+    sudo ip link set $1 down > /dev/null 2>&1
+}
+
+function iface_up {
+    sudo ip link set $1 up > /dev/null 2>&1
+}
+
+function iface_monitor {
+    sudo iw dev $1 set monitor none > /dev/null 2>&1 ||
+    sudo iw dev $1 set type monitor > /dev/null 2>&1
+}
+
+function iface_scan {
+    iface_down $1 &&
+    sudo iw dev $1 set type managed > /dev/null 2>&1 &&
+    iface_up $1 &&
+    sudo iw dev $1 scan > /dev/null 2>&1
+}
+
+function iface_config {
+    sudo iw $1 set freq $2 $3 2>&1
+}
+
+function iface_start {
+    sudo tcpdump -i $1 -U -w -
+}
+
+function capture_generic {
+    if ! { iwconfig $1 | grep Monitor > /dev/null 2>&1; }; then
+        iface_down    $1 &&
+        iface_monitor $1 &&
+        iface_up      $1
+    fi
+
+    iface_config  $1 $2 $3 &&
+    iface_start   $1 $4
+}
+
+function capture_iwlwifi {
+    INDEX=`sudo iw dev $1 info | grep wiphy | grep -Eo '[0-9]+'`
+    sudo iw phy phy${INDEX} channels | grep $2 | grep -i disabled > /dev/null 2>&1 &&
+    iface_scan $1
+    MON=${1}mon
+    sudo iw $1 interface add $MON type monitor flags none > /dev/null 2>&1
+    iface_up $MON &&
+    iface_down $1 &&
+    iface_config $MON $2 $3 &&
+    iface_start $MON $4
+}
+
+function capture {
+    driver=`/usr/sbin/ethtool -i $1 | grep driver | awk '{ print $2 }'`
+    if [ $driver = "iwlwifi" ]; then
+        capture_iwlwifi $1 $2 $3 $4
+    else
+        capture_generic $1 $2 $3 $4
+    fi
+}
+
+capture INTERFACE CHANNEL_FREQUENCY CHANNEL_WIDTH
+
+"""
+
+zbdump_script = """
+sudo /usr/bin/killall /usr/local/bin/whsniff > /dev/null
+sleep 3
+sudo /usr/local/bin/whsniff -c CHANNEL
+"""
 
 """
 This code has been taken from http://stackoverflow.com/questions/5943249/python-argparse-and-controlling-overriding-the-exit-status-code - originally developed by Rob Cowie http://stackoverflow.com/users/46690/rob-cowie
@@ -58,25 +131,46 @@ class ArgumentParser(argparse.ArgumentParser):
 
 def extcap_config(interface, option):
 
+    def freq_to_channel(freq_mhz):
+        if freq_mhz == 2484:
+            return 14
+        elif freq_mhz >= 2412 and freq_mhz <= 2484:
+            return int(((freq_mhz - 2412) / 5) + 1)
+        elif freq_mhz >= 5160 and freq_mhz <= 5885:
+            return int(((freq_mhz - 5180) / 5) + 36)
+        elif freq_mhz >= 5955 and freq_mhz <= 7115:
+            return int(((freq_mhz - 5955) / 5) + 1)
+        return None
+
+    def freq_to_band(freq_mhz):
+        if freq_mhz >= 2412 and freq_mhz <= 2484:
+            return "2.4 GHz"
+        elif freq_mhz >= 5160 and freq_mhz <= 5885:
+            return "5 GHz"
+        elif freq_mhz >= 5955 and freq_mhz <= 7115:
+            return "6 GHz (PSC)"
+        return None
+
     if (interface == "wifidump"):
         # Args
         # Capture Tab
         print("arg {number=0}{call=--remote-interface}{display=Remote Wi-Fi interface name}{type=string}{toolip=The name of the Wi-Fi interface to run the capture on}{required=true}{default=wlan0}{group=Capture}")
-        print("arg {number=1}{call=--remote-channel}{display=Remote Wi-Fi channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
+        print("arg {number=1}{call=--remote-channel-or-frequency}{display=Remote Wi-Fi channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
         print("arg {number=2}{call=--remote-channel-width}{display=Remote Wi-Fi channel width}{type=selector}{tooltip=The width of the channel to capture on}{group=Capture}")
 
         # Channel values
-        for ch in channels_wifi:
-            print("value {arg=1}{value=" + str(ch) + "}{display=Channel " + str(ch) + "}")
+        for freq in freqs_wifi:
+            print("value {arg=1}{value=" + str(freq) + "}{display=" + freq_to_band(freq) + ", Channel " + str(freq_to_channel(freq)) + "}")
 
         # Channel width values
         print("value {arg=2}{value=HT20}{display=20 MHz}")
         print("value {arg=2}{value=HT40-}{display=40- MHz}")
         print("value {arg=2}{value=HT40+}{display=40+ MHz}")
         print("value {arg=2}{value=80MHz}{display=80 MHz}")
+        print("value {arg=2}{value=160MHz}{display=160 MHz}")
 
     elif (interface == "zbdump"):
-        print("arg {number=0}{call=--remote-channel}{display=Remote Zigbee channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
+        print("arg {number=0}{call=--remote-channel-or-frequency}{display=Remote Zigbee channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
 
         for ch in range(11, 27):
             print("value {arg=0}{value=" + str(ch) + "}{display=Channel " + str(ch) + "}")
@@ -104,7 +198,7 @@ def extcap_dlts(interface):
     elif (interface == "zbdump"):
         print("dlt {number=195}{name=zbdump}{display=IEEE 802.15.4 with FCS DLT}")
 
-def extcap_capture(interface, remote_host, remote_port, remote_username, remote_password, sshkey, remote_interface, remote_channel, remote_channel_width, fifo, capture_filter):
+def extcap_capture(interface, remote_host, remote_port, remote_username, remote_password, sshkey, remote_interface, remote_channel_or_frequency, remote_channel_width, fifo, capture_filter):
     extcap_path = sys.argv[0]
     extcap_dir  = os.path.dirname(extcap_path)
     sshdump_path = os.path.join(extcap_dir, "sshdump")
@@ -132,17 +226,13 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
         if not remote_interface:
             remote_interface = "wlan0"
 
-        if remote_interface:
-            capture_cmd="sudo ip link set " + remote_interface + " down > /dev/null" + \
-                        " ; sudo iw dev " + remote_interface + " set type monitor > /dev/null" + \
-                        " ; sudo ip link set " + remote_interface + " up > /dev/null" + \
-                        " ; sudo iw " + remote_interface + " set channel " + remote_channel + " " + remote_channel_width + " > /dev/null" + \
-                        " && sudo tcpdump -i " + remote_interface + " -U -w -"
+        capture_cmd = wifidump_script
+        for arg, value in (("INTERFACE", remote_interface), ("CHANNEL_FREQUENCY", remote_channel_or_frequency), ("CHANNEL_WIDTH", remote_channel_width)):
+            capture_cmd = capture_cmd.replace(arg, value)
 
     # Prepare remote command for Zigbee capture
     elif (interface == "zbdump"):
-        capture_cmd = "sudo /usr/bin/killall /usr/local/bin/whsniff > /dev/null" \
-                    " ; sleep 3; sudo /usr/local/bin/whsniff -c " + remote_channel
+        capture_cmd = zbdump_script.replace("CHANNEL", remote_channel_or_frequency)
 
     if capture_cmd:
         sshdump_args = [sshdump_path,
@@ -190,8 +280,8 @@ if __name__ == '__main__':
     parser.add_argument("--remote-password", help="The remote SSH port password (if not specified, ssh-agent and ssh-key are used)")
     parser.add_argument("--sshkey", help="The path of the ssh key for passwordless authentication")
     parser.add_argument("--remote-interface", help="The name of remote interface to be used for capturing (e.g. wlan0)")
-    parser.add_argument("--remote-channel", help="The remote channel to capture")
-    parser.add_argument("--remote-channel-width", help="The width of the remote channel (HT20, HT40-, HT40+, 80MHz)")
+    parser.add_argument("--remote-channel-or-frequency", help="The remote channel or frequency (MHz) to capture")
+    parser.add_argument("--remote-channel-width", help="The width of the remote channel (HT20, HT40-, HT40+, 80MHz, 160MHz)")
 
     try:
         args, unknown = parser.parse_known_args()
@@ -216,7 +306,7 @@ if __name__ == '__main__':
     elif args.capture:
         if (args.extcap_interface == "wifidump" or args.extcap_interface == "zbdump"):
             extcap_capture(args.extcap_interface, args.remote_host, args.remote_port, args.remote_username, args.remote_password, args.sshkey,
-                           args.remote_interface, args.remote_channel, args.remote_channel_width, args.fifo, args.extcap_capture_filter)
+                           args.remote_interface, args.remote_channel_or_frequency, args.remote_channel_width, args.fifo, args.extcap_capture_filter)
         else:
             sys.exit(ERROR_INTERFACE)
     else:
