@@ -51,7 +51,11 @@ function iface_scan {
 }
 
 function iface_config {
-    sudo iw $1 set freq $2 $3 2>&1
+    if [ $2 -eq $4 ]; then
+        sudo iw dev $1 set freq $2 $3 2>&1
+    else
+        sudo iw dev $1 set freq $2 $3 $4 2>&1
+    fi
 }
 
 function iface_start {
@@ -65,8 +69,8 @@ function capture_generic {
         iface_up      $1
     fi
 
-    iface_config  $1 $2 $3 &&
-    iface_start   $1 $4
+    iface_config  $1 $2 $3 $4 &&
+    iface_start   $1
 }
 
 function capture_iwlwifi {
@@ -77,8 +81,8 @@ function capture_iwlwifi {
     sudo iw $1 interface add $MON type monitor flags none > /dev/null 2>&1
     iface_up $MON &&
     iface_down $1 &&
-    iface_config $MON $2 $3 &&
-    iface_start $MON $4
+    iface_config $MON $2 $3 $4 &&
+    iface_start $MON
 }
 
 function capture {
@@ -90,8 +94,7 @@ function capture {
     fi
 }
 
-capture INTERFACE CHANNEL_FREQUENCY CHANNEL_WIDTH
-
+capture INTERFACE CHANNEL_FREQUENCY CHANNEL_WIDTH CENTER_FREQUENCY
 """
 
 zbdump_script = """
@@ -163,11 +166,10 @@ def extcap_config(interface, option):
             print("value {arg=1}{value=" + str(freq) + "}{display=" + freq_to_band(freq) + ", Channel " + str(freq_to_channel(freq)) + "}")
 
         # Channel width values
-        print("value {arg=2}{value=HT20}{display=20 MHz}")
-        print("value {arg=2}{value=HT40-}{display=40- MHz}")
-        print("value {arg=2}{value=HT40+}{display=40+ MHz}")
-        print("value {arg=2}{value=80MHz}{display=80 MHz}")
-        print("value {arg=2}{value=160MHz}{display=160 MHz}")
+        print("value {arg=2}{value=20}{display=20 MHz}")
+        print("value {arg=2}{value=40}{display=40 MHz}")
+        print("value {arg=2}{value=80}{display=80 MHz}")
+        print("value {arg=2}{value=160}{display=160 MHz}")
 
     elif (interface == "zbdump"):
         print("arg {number=0}{call=--remote-channel-or-frequency}{display=Remote Zigbee channel}{type=selector}{tooltip=The channel to capture on}{group=Capture}")
@@ -203,6 +205,54 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
     extcap_dir  = os.path.dirname(extcap_path)
     sshdump_path = os.path.join(extcap_dir, "sshdump")
 
+    def center_freq(freq_mhz, ch_width_mhz):
+        if ch_width_mhz == 20:
+            return freq_mhz
+
+        elif ch_width_mhz == 40:
+            if 5180 <= freq_mhz <= 5720:
+                for start_freq in range(5180, 5700 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 20):
+                        return ((start_freq * 2) + 20) / 2
+
+            elif 5745 <= freq_mhz <= 5765:
+                return 5755
+
+            elif 5785 <= freq_mhz <= 5805:
+                return 5795
+
+            elif 5955 <= freq_mhz <= 7095:
+                for start_freq in range(5955, 7075 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 20):
+                        return ((start_freq * 2) + 20) / 2
+
+        elif ch_width_mhz == 80:
+            if 5180 <= freq_mhz <= 5660:
+                for start_freq in range(5180, 5660 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 60):
+                        return ((start_freq * 2) + 60) / 2
+
+            elif 5745 <= freq_mhz <= 5805:
+                return 5775
+
+            elif 5955 <= freq_mhz <= 7055:
+                for start_freq in range(5955, 6995 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 60):
+                        return ((start_freq * 2) + 60) / 2
+
+        elif ch_width_mhz == 160:
+            if 5180 <= freq_mhz <= 5640:
+                for start_freq in range(5180, 5500 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 140):
+                        return ((start_freq * 2) + 140) / 2
+
+            elif 5955 <= freq_mhz <= 7055:
+                for start_freq in range(5955, 6915 + ch_width_mhz, ch_width_mhz):
+                    if start_freq <= freq_mhz <= (start_freq + 140):
+                        return ((start_freq * 2) + 140) / 2
+        return -1
+
+
     capture_cmd = ""
 
     if not remote_username:
@@ -221,13 +271,16 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
     if (interface == "wifidump"):
 
         if not remote_channel_width:
-            remote_channel_width = "HT20"
+            remote_channel_width = "20"
 
         if not remote_interface:
             remote_interface = "wlan0"
 
+        center_frequency = str(center_freq(int(remote_channel_or_frequency), int(remote_channel_width)))
+
         capture_cmd = wifidump_script
-        for arg, value in (("INTERFACE", remote_interface), ("CHANNEL_FREQUENCY", remote_channel_or_frequency), ("CHANNEL_WIDTH", remote_channel_width)):
+        for arg, value in (("INTERFACE", remote_interface), ("CHANNEL_FREQUENCY", remote_channel_or_frequency),
+            ("CHANNEL_WIDTH", remote_channel_width), ("CENTER_FREQUENCY", center_frequency)):
             capture_cmd = capture_cmd.replace(arg, value)
 
     # Prepare remote command for Zigbee capture
@@ -281,7 +334,7 @@ if __name__ == '__main__':
     parser.add_argument("--sshkey", help="The path of the ssh key for passwordless authentication")
     parser.add_argument("--remote-interface", help="The name of remote interface to be used for capturing (e.g. wlan0)")
     parser.add_argument("--remote-channel-or-frequency", help="The remote channel or frequency (MHz) to capture")
-    parser.add_argument("--remote-channel-width", help="The width of the remote channel (HT20, HT40-, HT40+, 80MHz, 160MHz)")
+    parser.add_argument("--remote-channel-width", help="The width of the remote channel (20, 40, 80, 160) in MHz")
 
     try:
         args, unknown = parser.parse_known_args()
