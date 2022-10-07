@@ -39,8 +39,8 @@ function iface_up {
 }
 
 function iface_monitor {
-    sudo iw dev $1 set monitor none > /dev/null 2>&1 ||
-    sudo iw dev $1 set type monitor > /dev/null 2>&1
+    sudo iw dev $1 set monitor none control > /dev/null 2>&1 ||
+    sudo iw dev $1 set type monitor none control > /dev/null 2>&1
 }
 
 function iface_scan {
@@ -67,6 +67,8 @@ function capture_generic {
         iface_down    $1 &&
         iface_monitor $1 &&
         iface_up      $1
+    else
+        iface_monitor $1
     fi
 
     iface_config  $1 $2 $3 $4 &&
