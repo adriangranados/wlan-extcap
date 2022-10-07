@@ -39,8 +39,8 @@ function iface_up {
 }
 
 function iface_monitor {
-    sudo iw dev $1 set monitor none control > /dev/null 2>&1 ||
-    sudo iw dev $1 set type monitor none control > /dev/null 2>&1
+    sudo iw dev $1 set monitor control otherbss > /dev/null 2>&1 ||
+    sudo iw dev $1 set type monitor control otherbss > /dev/null 2>&1
 }
 
 function iface_scan {
