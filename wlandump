@@ -278,7 +278,7 @@ def extcap_capture(interface, remote_host, remote_port, remote_username, remote_
         if not remote_interface:
             remote_interface = "wlan0"
 
-        center_frequency = str(center_freq(int(remote_channel_or_frequency), int(remote_channel_width)))
+        center_frequency = str(int(center_freq(int(remote_channel_or_frequency), int(remote_channel_width))))
 
         capture_cmd = wifidump_script
         for arg, value in (("INTERFACE", remote_interface), ("CHANNEL_FREQUENCY", remote_channel_or_frequency),
