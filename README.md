@@ -1,3 +1,7 @@
+## The Wi-Fi component of this project has been deprecated as it is now incorporated in Wireshark 4.0 as a built-in extcap interface ([wifidump](https://www.wireshark.org/docs//man-pages/wifidump.html)).
+
+---
+
 # wlan-extcap
 Wireshark extcap interface for remote wireless captures using a Linux device.
 
